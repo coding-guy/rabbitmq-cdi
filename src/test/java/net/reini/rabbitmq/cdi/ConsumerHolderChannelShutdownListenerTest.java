@@ -1,8 +1,5 @@
 package net.reini.rabbitmq.cdi;
 
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
@@ -11,6 +8,9 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import com.rabbitmq.client.MissedHeartbeatException;
 import com.rabbitmq.client.ShutdownSignalException;
+
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 @SuppressWarnings("boxing")
 @ExtendWith(MockitoExtension.class)
@@ -35,11 +35,11 @@ class ConsumerHolderChannelShutdownListenerTest {
   void testShutdownBecauseOfMissedHeartbeatException() {
     ConsumerHolderChannelShutdownListener sut =
         new ConsumerHolderChannelShutdownListener(consumerHolderMock);
-    when(shutdownExceptionMock.isInitiatedByApplication()).thenReturn(false);
+    //when(shutdownExceptionMock.isInitiatedByApplication()).thenReturn(false);
 
     when(shutdownExceptionMock.getCause()).thenReturn(new MissedHeartbeatException(""));
     sut.shutdownCompleted(shutdownExceptionMock);
-    verify(consumerHolderMock, Mockito.never()).ensureCompleteShutdown();
+    verify(consumerHolderMock, Mockito.times(1)).ensureCompleteShutdown();
   }
 
   @Test

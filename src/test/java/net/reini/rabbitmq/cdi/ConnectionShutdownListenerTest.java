@@ -1,8 +1,5 @@
 package net.reini.rabbitmq.cdi;
 
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-
 import java.util.concurrent.locks.ReentrantLock;
 
 import org.junit.jupiter.api.Test;
@@ -12,7 +9,11 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import com.rabbitmq.client.MissedHeartbeatException;
 import com.rabbitmq.client.ShutdownSignalException;
+
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 @SuppressWarnings("boxing")
 @ExtendWith(MockitoExtension.class)
@@ -30,6 +31,14 @@ class ConnectionShutdownListenerTest {
   void testRecoverableShutdown() {
     when(shutdownSignalExceptionMock.isInitiatedByApplication()).thenReturn(true);
     when(connectionManager.getState()).thenReturn(ConnectionState.CONNECTED);
+    sut.shutdownCompleted(shutdownSignalExceptionMock);
+    verify(connectionManager, Mockito.times(1)).changeState(ConnectionState.CONNECTING);
+  }
+
+
+  @Test
+  void testShutdownBecauseOfMissedHeartbeatException() {
+    when(shutdownSignalExceptionMock.getCause()).thenReturn(new MissedHeartbeatException(""));
     sut.shutdownCompleted(shutdownSignalExceptionMock);
     verify(connectionManager, Mockito.times(1)).changeState(ConnectionState.CONNECTING);
   }
