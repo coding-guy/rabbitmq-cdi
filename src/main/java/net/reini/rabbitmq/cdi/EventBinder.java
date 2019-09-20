@@ -271,6 +271,15 @@ public abstract class EventBinder {
     return new EventBindingBuilder<>(event, queueBindings::add, exchangeBindings::add);
   }
 
+  /**
+   * Attach a {@link ConnectionListener} to the binder to be informed on connection issues.
+   *
+   * @param connectionListener a custom {@link ConnectionListener}
+   */
+  public void registerListener( ConnectionListener connectionListener ) {
+    connectionRepository.registerConnectionListener( configuration, connectionListener );
+  }
+
   public static final class EventBindingBuilder<T> {
     private final Class<T> eventType;
     private final Consumer<QueueBinding<T>> queueBindingConsumer;
